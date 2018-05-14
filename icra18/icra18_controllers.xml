@@ -1,0 +1,7 @@
+<library path="lib/libicra18_controllers">
+  <class name="icra18_controllers/ModelExampleController" type="icra18_controllers::ModelExampleController" base_class_type="controller_interface::ControllerBase">
+    <description>
+      A controller that evaluates and prints the dynamic model of Franka
+    </description>
+  </class>
+</library>

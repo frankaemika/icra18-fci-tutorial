@@ -1,0 +1,27 @@
+- type: moveit_joint
+  params:
+    pose: [0.0, -0.785, 0.0, -2.356, 0.0, 1.571, 0.785]
+
+- type: gripper_move
+  params:
+    width: 0.08
+    timeout: 1.0
+
+- type: moveit_cart
+  params:
+    pos: [0.3, 0.0, 0.5]
+    rot: [0.0, 1.0, 0.0, 0.0]
+
+- type: run_controller
+  params:
+    controller_name: model_example_controller
+    wait: 10
+
+- type: moveit_joint
+  params:
+    pose: [0.0, -0.785, 0.0, -2.356, 0.0, 1.571, 0.785]
+
+- type: gripper_move
+  params:
+    width: 0.02
+    timeout: 1.0
