@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(catkin REQUIRED COMPONENTS
   controller_interface
   franka_hw
+  dynamic_reconfigure
   hardware_interface
   pluginlib
   realtime_tools
@@ -17,11 +18,22 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(Franka 0.4.0 REQUIRED)
+find_package(Eigen3 REQUIRED)
+
+include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS}
+    )
+generate_messages()
+
+generate_dynamic_reconfigure_options(
+  cfg/plug_in_params.cfg
+)
 
 catkin_package()
 
+
 add_library(icra18_controllers
   src/model_example_controller.cpp
+  src/plug_in_controller.cpp
 )
 
 add_dependencies(icra18_controllers
