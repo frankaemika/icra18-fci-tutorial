@@ -25,6 +25,8 @@
   <exec_depend>franka_description</exec_depend>
   <exec_depend>panda_moveit_config</exec_depend>
   <exec_depend>rospy</exec_depend>
+  <exec_depend>rosparam</exec_depend>
+  <exec_depend>rospkg</exec_depend>
 
   <export>
     <controller_interface plugin="${prefix}/icra18_controllers.xml"/>

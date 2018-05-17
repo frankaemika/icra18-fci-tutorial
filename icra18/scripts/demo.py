@@ -2,11 +2,15 @@
 
 import actionlib_msgs.msg
 import franka_gripper.msg
+import franka_control.srv
 import geometry_msgs.msg
 import controller_manager_msgs.srv
 import moveit_commander
 import actionlib
 import rospy
+import rospkg
+import rosparam
+import os.path
 import sys
 
 
@@ -36,11 +40,12 @@ class Context:
             controller_manager_msgs.srv.SwitchController)
         self.switch_controller.wait_for_service()
 
-        rospy.loginfo('Waiting for controller_manager/list_controllers')
-        self.list_controllers = rospy.ServiceProxy(
-            'controller_manager/list_controllers',
-            controller_manager_msgs.srv.ListControllers)
-        self.list_controllers.wait_for_service()
+        rospy.loginfo('Waiting for '
+                      'franka_control/set_force_torque_collision_behavior')
+        self.set_collision_behavior = rospy.ServiceProxy(
+            'franka_control/set_force_torque_collision_behavior',
+            franka_control.srv.SetForceTorqueCollisionBehavior)
+        self.set_collision_behavior.wait_for_service()
 
         self.active_controllers = []
 
@@ -55,15 +60,17 @@ class Context:
         self.active_controllers = controllers
 
 
-def moveit_joint(ctx, pose):
+def moveit_joint(ctx, pose, acc=0.1, vel=0.1):
     ctx.load_controllers(['position_joint_trajectory_controller'])
 
     print('Moving to joint pose {}'.format(pose))
+    ctx.commander.set_max_acceleration_scaling_factor(acc)
+    ctx.commander.set_max_velocity_scaling_factor(vel)
     ctx.commander.go(pose, wait=True)
     ctx.commander.stop()
 
 
-def moveit_cart(ctx, pos, rot):
+def moveit_cart(ctx, pos, rot, acc=0.1, vel=0.1):
     ctx.load_controllers(['position_joint_trajectory_controller'])
 
     print('Moving to Cartesian pose: pos {}, rot {}'.format(pos, rot))
@@ -75,22 +82,28 @@ def moveit_cart(ctx, pos, rot):
     pose_goal.position.x = pos[0]
     pose_goal.position.y = pos[1]
     pose_goal.position.z = pos[2]
+    ctx.commander.set_max_acceleration_scaling_factor(acc)
+    ctx.commander.set_max_velocity_scaling_factor(vel)
+    ctx.commander.set_end_effector_link('panda_link8')
     ctx.commander.set_pose_target(pose_goal)
     ctx.commander.go(wait=True)
     ctx.commander.stop()
     ctx.commander.clear_pose_targets()
 
 
-def gripper_move(ctx, width, timeout=1.0,
+def gripper_move(ctx, width,
                  epsilon_inner=0.005, epsilon_outer=0.005,
                  speed=0.1, force=10):
     goal = franka_gripper.msg.MoveGoal(width=width, speed=speed)
     rospy.loginfo('Moving gripper:\n{}'.format(goal))
     ctx.gripper_move.send_goal(goal)
-    ctx.gripper_move.wait_for_result(rospy.Duration.from_sec(timeout))
+    ctx.gripper_move.wait_for_result()
+    if not ctx.gripper_move.get_result().success:
+        rospy.logerr("Couldn't move gripper")
+        sys.exit(1)
 
 
-def gripper_grasp(ctx, width, timeout=1.0,
+def gripper_grasp(ctx, width,
                   epsilon_inner=0.005, epsilon_outer=0.005,
                   speed=0.1, force=10):
     epsilon = franka_gripper.msg.GraspEpsilon(inner=epsilon_inner,
@@ -101,13 +114,31 @@ def gripper_grasp(ctx, width, timeout=1.0,
                                         force=force)
     rospy.loginfo('Grasping:\n{}'.format(goal))
     ctx.gripper_grasp.send_goal(goal)
-    ctx.gripper_grasp.wait_for_result(rospy.Duration.from_sec(timeout))
+    ctx.gripper_grasp.wait_for_result()
+
+    while not ctx.gripper_grasp.get_result().success:
+        rospy.logerr('Failed to grasp, retry')
+        gripper_move(ctx, width=0.08)
+        ctx.gripper_grasp.send_goal(goal)
+        ctx.gripper_grasp.wait_for_result()
+        if rospy.is_shutdown():
+            sys.exit(0)
 
 
-def run_controller(ctx, controller_name, wait=None):
+def run_controller(ctx, controller_name, wait=5):
     ctx.load_controllers([controller_name])
     if wait is not None:
         rospy.sleep(rospy.Duration.from_sec(wait))
+    ctx.load_controllers([])
+
+
+def set_collision_behavior(ctx, torques, forces):
+    rospy.loginfo(
+        'Setting CB:\n torques: {}\nforces: {}'.format(torques, forces))
+    ctx.set_collision_behavior(lower_torque_thresholds_nominal=torques,
+                               upper_torque_thresholds_nominal=torques,
+                               lower_force_thresholds_nominal=forces,
+                               upper_force_thresholds_nominal=forces)
 
 
 STEPS = {
@@ -116,6 +147,7 @@ STEPS = {
   'gripper_move': gripper_move,
   'gripper_grasp': gripper_grasp,
   'run_controller': run_controller,
+  'set_collision_behavior': set_collision_behavior,
 }
 
 
@@ -130,8 +162,8 @@ if __name__ == '__main__':
 
     rospy.loginfo('Waiting for controller_manager/load_controller')
     load_controller = rospy.ServiceProxy(
-        'controller_manager/load_controller',
-        controller_manager_msgs.srv.LoadController)
+                 'controller_manager/load_controller',
+                 controller_manager_msgs.srv.LoadController)
     load_controller.wait_for_service()
 
     for controller_name in rospy.get_param('~controllers'):
@@ -140,13 +172,21 @@ if __name__ == '__main__':
             sys.exit(1)
     rospy.loginfo('Loaded controllers')
 
+    rospack = rospkg.RosPack()
+
     ctx = Context('panda_arm')
 
-    config = rospy.get_param('~config')
-    steps = [create_step(x['type'], x['params']) for x in config]
+    demo_files = [os.path.join(rospack.get_path('icra18'),
+                               'config',
+                               '{}.yaml'.format(f))
+                  for f in rospy.get_param('~demos')]
+    configs = [rosparam.load_file(f)[0][0] for f in demo_files]
+    steps = [create_step(x['type'], x['params']) for x in sum(configs, [])]
 
     rospy.loginfo('Running steps')
     for step in steps:
+        if rospy.is_shutdown():
+            sys.exit(0)
         step(ctx)
 
     rospy.loginfo('Performed all steps, shutting down')

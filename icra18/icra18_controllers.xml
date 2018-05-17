@@ -4,4 +4,9 @@
       A controller that evaluates and prints the dynamic model of Franka
     </description>
   </class>
+  <class name="icra18_controllers/PlugInController" type="icra18_controllers::PlugInController" base_class_type="controller_interface::ControllerBase">
+    <description>
+      Plug-in
+    </description>
+  </class>
 </library>

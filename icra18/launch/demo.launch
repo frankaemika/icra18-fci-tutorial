@@ -14,7 +14,7 @@
   </include>
   <rosparam command="load" file="$(find icra18)/config/controllers.yaml" />
   <node name="demo" pkg="icra18" type="demo.py" output="screen" required="true">
-    <rosparam file="$(find icra18)/config/demo.yaml" param="config" />
-    <rosparam param="controllers">[model_example_controller, position_joint_trajectory_controller]</rosparam>
+    <rosparam param="demos">[power]</rosparam>
+    <rosparam param="controllers">[plug_in_controller, position_joint_trajectory_controller]</rosparam>
   </node>
 </launch>
