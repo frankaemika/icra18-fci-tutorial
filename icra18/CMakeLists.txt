@@ -22,7 +22,7 @@ find_package(Eigen3 REQUIRED)
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${EIGEN3_INCLUDE_DIRS}
     )
-generate_messages()
+#generate_messages()
 
 generate_dynamic_reconfigure_options(
   cfg/plug_in_params.cfg
