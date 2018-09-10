@@ -60,13 +60,13 @@ class Context:
         self.active_controllers = controllers
 
 
-def moveit_joint(ctx, pose, acc=0.1, vel=0.1):
+def moveit_joint(ctx, position, acc=0.1, vel=0.1):
     ctx.load_controllers(['position_joint_trajectory_controller'])
 
-    print('Moving to joint pose {}'.format(pose))
+    print('Moving to joint position {}'.format(position))
     ctx.commander.set_max_acceleration_scaling_factor(acc)
     ctx.commander.set_max_velocity_scaling_factor(vel)
-    ctx.commander.go(pose, wait=True)
+    ctx.commander.go(position, wait=True)
     ctx.commander.stop()
 
 
