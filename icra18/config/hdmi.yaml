@@ -8,6 +8,13 @@
   params:
     width: 0.08
 
+# Move to initial joint configuration
+- type: moveit_joint
+  params:
+    position: [0.000238275,-0.784714,-0.000123644,-2.3558,-0.000510225,1.57098,0.785892]
+    acc: 1.0
+    vel: 1.0
+
 # Move to A pose
 - type: moveit_cart
   params:
