@@ -137,8 +137,6 @@ void PlugInController::update(const ros::Time& /*time*/, const ros::Duration& pe
   // FF + PI control
   tau_force = jacobian.transpose() * force_control;
 
-  ROS_INFO_STREAM_THROTTLE(1.0, "force_error:" << force_error_.transpose());
-
   // WIGGLE MOTION
   Eigen::AngleAxisd angle_axis_wiggle_x;
   angle_axis_wiggle_x.axis() << 1, 0, 0;
@@ -150,6 +148,7 @@ void PlugInController::update(const ros::Time& /*time*/, const ros::Duration& pe
   Eigen::Quaterniond wiggle_x(angle_axis_wiggle_x);
   Eigen::Quaterniond wiggle_y(angle_axis_wiggle_y);
   Eigen::Quaterniond orientation_d(wiggle_y*(wiggle_x*orientation_d_));
+
 
   // CARTESIAN IMPEDANCE
   // compute error to desired pose
@@ -173,7 +172,6 @@ void PlugInController::update(const ros::Time& /*time*/, const ros::Duration& pe
                   (-cartesian_stiffness_ * error - cartesian_damping_ * (jacobian * dq));
   // Desired torque
   tau_cartesian_impedance << tau_task + coriolis;
-
 
   tau_cmd << tau_cartesian_impedance + tau_force;
   for (size_t i = 0; i < 7; ++i) {

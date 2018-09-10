@@ -33,7 +33,6 @@ catkin_package()
 
 
 add_library(icra18_controllers
-  src/model_example_controller.cpp
   src/plug_in_controller.cpp
 )
 
