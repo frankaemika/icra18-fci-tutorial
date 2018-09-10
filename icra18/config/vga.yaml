@@ -1,63 +1,49 @@
 - type: set_collision_behavior
   params:
     torques: [20.0, 20.0, 18.0, 18.0, 16.0, 14.0, 12.0]
-    forces: [40.0, 40.0, 50.0, 40.0, 30.0, 30.0]
+    forces: [20.0, 20.0, 30.0, 25.0, 25.0, 25.0]
 
 # Open gripper
 - type: gripper_move
   params:
     width: 0.08
 
-# Approach
+# Move to A pose
 - type: moveit_cart
   params:
-    pos: [0.128149533582, -0.720213803734, 0.256722179742]
-    rot: [9.86106244567e-05, -0.384914160639, 0.922939517983, 0.00487086861426]
-    acc: 0.2
-    vel: 0.4
+    pos: [0.491923815081, 0.00466224121569, 0.381090223603]
+    rot: [0.0108892906705, -0.926104981096, 0.376920301196, -0.0119194749773]
+    acc: 0.5
+    vel: 0.5
 
-# Grasp position
+# Move gripper
+- type: gripper_move
+  params:
+    width: 0.0654624402523
+
+# Move to B pose
 - type: moveit_cart
   params:
-    pos: [0.124699659183, -0.723625000373, 0.0513299599793]
-    rot: [0.0015529196794, 0.384532366012, -0.923027351563, -0.0123675460625]
+    pos: [0.255193649082, -0.0160354377617, 0.62935538487]
+    rot: [0.00596318128616, -0.912867487569, 0.408207578312, -0.0019908835862]
+    acc: 0.5
+    vel: 0.5
 
-# Grasp plug
-- type: gripper_grasp
+# Move gripper
+- type: gripper_move
   params:
-    width: 0.0183137767017
+    width: 0.034874252975
 
-# Retract
+# Move to C pose
 - type: moveit_cart
   params:
-    pos: [0.128149533582, -0.720213803734, 0.256722179742]
-    rot: [9.86106244567e-05, -0.384914160639, 0.922939517983, 0.00487086861426]
+    pos: [0.449599778817, 0.0503338014111, 0.674805731233]
+    rot: [0.00447540271635, -0.919924287847, 0.391425624634, -0.0224778953434]
+    acc: 0.5
+    vel: 0.5
 
-# Plug-in approach
-- type: moveit_cart
-  params:
-    pos: [0.0127575025987, -0.655897976332, 0.212913246965]
-    rot: [0.00551710316237, 0.392955491657, 0.919364602208, 0.0180075360824]
-
-# Plug-in position
-- type: moveit_cart
-  params:
-    pos: [0.0128929635441, -0.648034461152, 0.164449462764]
-    rot: [0.0011511622788, 0.381388437839, 0.924409517603, 0.00292883472478]
-
-# Plug in
+# Run custom controller for 4 seconds.
 - type: run_controller
   params:
     controller_name: plug_in_controller
-    wait: 10
-
-# Open gripper
-- type: gripper_move
-  params:
-    width: 0.08
-
-# Plug-in retract
-- type: moveit_cart
-  params:
-    pos: [0.0127575025987, -0.655897976332, 0.212913246965]
-    rot: [0.00551710316237, 0.392955491657, 0.919364602208, 0.0180075360824]
+    wait: 4

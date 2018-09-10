@@ -8,58 +8,42 @@
   params:
     width: 0.08
 
-# Approach
+# Move to A pose
 - type: moveit_cart
   params:
-    pos: [0.176773452791, -0.570608047891, 0.240835568221]
-    rot: [0.000584162276236, 0.382894588719, -0.923681226981, 0.0142962794763]
-    acc: 0.2
-    vel: 0.4
+    pos: [0.491923815081, 0.00466224121569, 0.381090223603]
+    rot: [0.0108892906705, -0.926104981096, 0.376920301196, -0.0119194749773]
+    acc: 0.25
+    vel: 0.25
 
-# Grasp position
+# Move gripper
+- type: gripper_move
+  params:
+    width: 0.0654624402523
+
+# Move to B pose
 - type: moveit_cart
   params:
-    pos: [0.175093257038, -0.573829033476, 0.166917361804]
-    rot: [0.00739872750853, -0.378476380323, 0.925572284213, -0.00410305571163]
+    pos: [0.255193649082, -0.0160354377617, 0.62935538487]
+    rot: [0.00596318128616, -0.912867487569, 0.408207578312, -0.0019908835862]
+    acc: 0.25
+    vel: 0.25
 
-# Grasp plug
-- type: gripper_grasp
+# Move gripper
+- type: gripper_move
   params:
-    width: 0.013
+    width: 0.034874252975
 
-# Retract
+# Move to C pose
 - type: moveit_cart
   params:
-    pos: [0.187432042311, -0.580754840312, 0.350566971683]
-    rot: [0.000715594655597, 0.383305866233, -0.923078737538, -0.0316503576674]
+    pos: [0.449599778817, 0.0503338014111, 0.674805731233]
+    rot: [0.00447540271635, -0.919924287847, 0.391425624634, -0.0224778953434]
+    acc: 0.25
+    vel: 0.25
 
-# Plug-in approach
-- type: moveit_cart
-  params:
-    pos: [0.0892398131409, -0.632665794062, 0.324478595956]
-    rot: [0.00382996368811, -0.34961947, 0.936630249183, 0.0218021533373]
-
-# Plug-in position
-- type: moveit_cart
-  params:
-    pos: [0.0881186221029, -0.627975633166, 0.27858601704]
-    rot: [0.000791807577264, -0.349346243593, 0.936986149738, 0.00367835936413]
-
-
-# Plug in
+# Run custom controller for 4 seconds.
 - type: run_controller
   params:
     controller_name: plug_in_controller
-    wait: 10
-
-# Open gripper
-- type: gripper_move
-  params:
-    width: 0.08
-
-# Plug-in retract
-- type: moveit_cart
-  params:
-    pos: [0.0881186221029, -0.627975633166, 0.27858601704]
-    rot: [0.000791807577264, -0.349346243593, 0.936986149738, 0.00367835936413]
-
+    wait: 4

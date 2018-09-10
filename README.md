@@ -33,7 +33,7 @@ You can also test just the plug_in controller an explore different configuration
 roslaunch icra18 plug_in_controller.launch robot_ip:=<robot-ip>
 ```
 
-To get specific poses for your custom `moveit_cart` or `moveit_joint` steps you might find useful running the teaching launch file, which constantly prints the robot configuration, by executing
+To get specific parameters for your custom `moveit_cart`, `gripper_move` or `gripper_grasp` steps you might find useful running the teaching launch file, which constantly prints the robot pose and the gripper width, by executing
 
 ```
 roslaunch icra18 teaching.launch robot_ip:=<robot-ip>
