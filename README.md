@@ -22,13 +22,17 @@ To configure:
     * `set_collision_behavior`: set the collision behavior for the robot.
 
 To execute:
-\
-    roslaunch icra18 demo.launch robot_ip:=<robot-ip>
+```
+roslaunch icra18 demo.launch robot_ip:=<robot-ip>
+```
 
 You can also test just the plug_in controller an explore different configurations with rqt_reconfigure by running
-\
-    roslaunch icra18 plug_in_controller.launch robot_ip:=<robot-ip>
+```
+roslaunch icra18 plug_in_controller.launch robot_ip:=<robot-ip>
+```
 
 To teach specific poses you might find useful running the teaching launch file, which constantly prints the robot configuration, by executing
-\
-    roslaunch icra18 teaching.launch robot_ip:=<robot-ip>
+
+```
+roslaunch icra18 teaching.launch robot_ip:=<robot-ip>
+```
