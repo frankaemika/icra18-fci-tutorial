@@ -1,0 +1,63 @@
+- type: set_collision_behavior
+  params:
+    torques: [20.0, 20.0, 18.0, 18.0, 16.0, 14.0, 12.0]
+    forces: [20.0, 20.0, 30.0, 25.0, 25.0, 25.0]
+
+# Open gripper
+- type: gripper_move
+  params:
+    width: 0.08
+
+# Approach
+- type: moveit_cart
+  params:
+    pos: [-0.039849862952, -0.726583035146, 0.345243818607]
+    rot: [0.0156067620203, 0.420503663703, -0.907138277444, 0.00576570786115]
+    acc: 0.2
+    vel: 0.4
+
+# Grasp position
+- type: moveit_cart
+  params:
+    pos: [-0.0563646875529, -0.725258933783, 0.0618752780935]
+    rot: [0.00325429326497, -0.379707713305, 0.924967275746, -0.0157162600961]
+
+# Grasp plug
+- type: gripper_grasp
+  params:
+    width: 0.016926240176
+
+# Retract
+- type: moveit_cart
+  params:
+    pos: [-0.039849862952, -0.726583035146, 0.345243818607]
+    rot: [0.0156067620203, 0.420503663703, -0.907138277444, 0.00576570786115]
+ 
+# Plug-in approach
+- type: moveit_cart
+  params:
+    pos: [-0.0272152941806, -0.65721071753, 0.266385548702]
+    rot: [0.0137418375467, -0.384525855003, -0.922991818136, -0.00609363507001]
+
+# Plug-in position
+- type: moveit_cart
+  params:
+    pos: [-0.019975383548, -0.650275594477, 0.172775956437]
+    rot: [0.0206816358679, -0.384663069879, -0.922820730229, 0.00291418419308]
+
+# Plug in
+- type: run_controller
+  params:
+    controller_name: plug_in_controller
+    wait: 10
+
+# Open gripper
+- type: gripper_move
+  params:
+    width: 0.08
+
+# Plug-in retract
+- type: moveit_cart
+  params:
+    pos: [-0.0272152941806, -0.65721071753, 0.266385548702]
+    rot: [0.0137418375467, -0.384525855003, -0.922991818136, -0.00609363507001]
